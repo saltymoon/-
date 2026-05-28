@@ -15,53 +15,48 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
   font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;
   line-height:1.75;}
 
-/* ヘッダー */
 header{background:linear-gradient(180deg,#fff,#fbfcfe);
   border-bottom:1px solid var(--line);padding:14px 16px 0;
   position:sticky;top:0;z-index:20;}
-h1{margin:0;font-size:16px;color:var(--accent)}
+h1{margin:0;font-size:17px;color:var(--accent)}
 
-/* 問ナビ */
 .q-nav{display:flex;gap:4px;overflow-x:auto;padding:10px 0 0;
   scrollbar-width:none;}
 .q-nav::-webkit-scrollbar{display:none}
 .q-btn{flex:0 0 auto;padding:6px 12px;border-radius:8px 8px 0 0;
   border:1px solid transparent;border-bottom:none;
-  background:transparent;font-size:13px;color:var(--muted);
+  background:transparent;font-size:15px;color:var(--muted);
   cursor:pointer;white-space:nowrap;}
 .q-btn:hover{background:var(--accent-light);color:var(--accent)}
 .q-btn.active{background:#fff;border-color:var(--line);
   color:var(--accent);font-weight:700;}
 
-/* 年度タブ */
 .year-nav{display:flex;gap:4px;overflow-x:auto;padding:12px 16px 0;
   scrollbar-width:none;border-bottom:1px solid var(--line);}
 .year-nav::-webkit-scrollbar{display:none}
 .y-btn{flex:0 0 auto;padding:6px 12px;border-radius:8px 8px 0 0;
   border:1px solid transparent;border-bottom:none;
-  background:transparent;font-size:13px;color:var(--muted);
+  background:transparent;font-size:15px;color:var(--muted);
   cursor:pointer;white-space:nowrap;}
 .y-btn:hover{background:var(--accent-light);color:var(--accent)}
 .y-btn.active{background:#fff;border-color:var(--line);
   color:var(--accent);font-weight:700;}
 
-/* 検索 */
 .search-bar{display:flex;align-items:center;gap:8px;
   padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);}
 .search-bar input{flex:1;border:1px solid var(--line);border-radius:8px;
-  padding:6px 10px;font-size:14px;font-family:inherit;outline:none;}
-.search-bar .count{color:var(--muted);font-size:12px;white-space:nowrap;}
+  padding:6px 10px;font-size:16px;font-family:inherit;outline:none;}
+.search-bar .count{color:var(--muted);font-size:14px;white-space:nowrap;}
 
-/* コンテンツ */
 main{max-width:900px;margin:0 auto;padding:20px 16px 60px;}
 .panel{background:var(--panel);border:1px solid var(--line);
-  border-radius:12px;padding:20px 20px;box-shadow:var(--shadow);font-size:15px;}
-.panel h3.q-h{font-size:16px;color:var(--accent);margin:0 0 14px;
+  border-radius:12px;padding:20px 20px;box-shadow:var(--shadow);font-size:17px;}
+.panel h3.q-h{font-size:18px;color:var(--accent);margin:0 0 14px;
   padding-bottom:8px;border-bottom:2px solid var(--accent-light);}
 .panel p{margin:0 0 10px}
 .panel p.sub-h{font-weight:600;color:#22335a;margin-top:16px;margin-bottom:8px;
   background:var(--accent-light);padding:6px 10px;border-radius:6px;}
-.panel p.cg-h{color:#445;font-size:13.5px;margin-top:8px;
+.panel p.cg-h{color:#445;font-size:15.5px;margin-top:8px;
   background:#f3f5f9;padding:5px 10px;border-radius:6px;display:inline-block;}
 mark{background:var(--hl);padding:0 1px;border-radius:2px;}
 </style>
@@ -83,7 +78,6 @@ const ALL = {"1": [{"tag": "R3-1", "title": "令和３年度 第１回", "html":
 const YEARS = ["令和３年度 第１回", "令和３年度 第２回", "令和４年度 第１回", "令和４年度 第２回", "令和５年度 第１回", "令和５年度 第２回", "令和６年度 第１回", "令和６年度 第２回", "令和７年度 第１回", "令和７年度 第２回"];
 let curQ = 1, curY = 0;
 
-// 問ナビ生成
 const qNav = document.getElementById('qNav');
 for(let q=1;q<=9;q++){
   const b = document.createElement('button');
@@ -93,7 +87,6 @@ for(let q=1;q<=9;q++){
   qNav.appendChild(b);
 }
 
-// 年度タブ生成
 const yearNav = document.getElementById('yearNav');
 YEARS.forEach((y,i)=>{
   const b = document.createElement('button');
