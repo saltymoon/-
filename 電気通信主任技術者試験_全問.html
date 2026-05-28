@@ -3,29 +3,30 @@
 <head>
 <meta charset="utf-8">
 <title>電気通信主任技術者試験 — 問１〜問９</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=3">
 <style>
 :root{
   --bg:#f6f8fb;--panel:#fff;--ink:#1a2236;--muted:#6b7790;
   --line:#e3e8ef;--accent:#1a4e8a;--accent-light:#e7f0fa;
   --hl:#fff3a3;--shadow:0 2px 8px rgba(20,40,70,0.06);
+  font-size:19px;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
   font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;
-  line-height:1.75;}
+  line-height:1.75;font-size:1rem;}
 
 header{background:linear-gradient(180deg,#fff,#fbfcfe);
   border-bottom:1px solid var(--line);padding:14px 16px 0;
   position:sticky;top:0;z-index:20;}
-h1{margin:0;font-size:17px;color:var(--accent)}
+h1{margin:0;font-size:1rem;color:var(--accent)}
 
 .q-nav{display:flex;gap:4px;overflow-x:auto;padding:10px 0 0;
   scrollbar-width:none;}
 .q-nav::-webkit-scrollbar{display:none}
 .q-btn{flex:0 0 auto;padding:6px 12px;border-radius:8px 8px 0 0;
   border:1px solid transparent;border-bottom:none;
-  background:transparent;font-size:15px;color:var(--muted);
+  background:transparent;font-size:0.85rem;color:var(--muted);
   cursor:pointer;white-space:nowrap;}
 .q-btn:hover{background:var(--accent-light);color:var(--accent)}
 .q-btn.active{background:#fff;border-color:var(--line);
@@ -36,7 +37,7 @@ h1{margin:0;font-size:17px;color:var(--accent)}
 .year-nav::-webkit-scrollbar{display:none}
 .y-btn{flex:0 0 auto;padding:6px 12px;border-radius:8px 8px 0 0;
   border:1px solid transparent;border-bottom:none;
-  background:transparent;font-size:15px;color:var(--muted);
+  background:transparent;font-size:0.85rem;color:var(--muted);
   cursor:pointer;white-space:nowrap;}
 .y-btn:hover{background:var(--accent-light);color:var(--accent)}
 .y-btn.active{background:#fff;border-color:var(--line);
@@ -45,18 +46,18 @@ h1{margin:0;font-size:17px;color:var(--accent)}
 .search-bar{display:flex;align-items:center;gap:8px;
   padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);}
 .search-bar input{flex:1;border:1px solid var(--line);border-radius:8px;
-  padding:6px 10px;font-size:16px;font-family:inherit;outline:none;}
-.search-bar .count{color:var(--muted);font-size:14px;white-space:nowrap;}
+  padding:6px 10px;font-size:0.9rem;font-family:inherit;outline:none;}
+.search-bar .count{color:var(--muted);font-size:0.8rem;white-space:nowrap;}
 
 main{max-width:900px;margin:0 auto;padding:20px 16px 60px;}
 .panel{background:var(--panel);border:1px solid var(--line);
-  border-radius:12px;padding:20px 20px;box-shadow:var(--shadow);font-size:17px;}
-.panel h3.q-h{font-size:18px;color:var(--accent);margin:0 0 14px;
+  border-radius:12px;padding:20px 20px;box-shadow:var(--shadow);font-size:1rem;}
+.panel h3.q-h{font-size:1.05rem;color:var(--accent);margin:0 0 14px;
   padding-bottom:8px;border-bottom:2px solid var(--accent-light);}
 .panel p{margin:0 0 10px}
 .panel p.sub-h{font-weight:600;color:#22335a;margin-top:16px;margin-bottom:8px;
   background:var(--accent-light);padding:6px 10px;border-radius:6px;}
-.panel p.cg-h{color:#445;font-size:15.5px;margin-top:8px;
+.panel p.cg-h{color:#445;font-size:0.9rem;margin-top:8px;
   background:#f3f5f9;padding:5px 10px;border-radius:6px;display:inline-block;}
 mark{background:var(--hl);padding:0 1px;border-radius:2px;}
 </style>
