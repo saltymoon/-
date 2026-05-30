@@ -42,7 +42,7 @@ h1{margin:0;font-size:1rem;color:var(--accent)}
 .search-bar input{flex:1;border:1px solid var(--line);border-radius:8px;
   padding:6px 10px;font-size:0.9rem;font-family:inherit;outline:none;}
 .search-bar .count{color:var(--muted);font-size:0.8rem;white-space:nowrap;}
-main{max-width:900px;margin:0 auto;padding:20px 16px 60px;}
+main{max-width:1400px;margin:0 auto;padding:20px 24px 60px;}
 
 /* 答えボックス */
 .answer-toggle{width:100%;padding:10px 16px;margin-bottom:12px;
@@ -53,13 +53,14 @@ main{max-width:900px;margin:0 auto;padding:20px 16px 60px;}
 .answer-box{background:var(--ans-bg);border:1px solid #a5d6a7;
   border-radius:10px;padding:12px 16px;margin-bottom:16px;
   display:none;flex-wrap:wrap;gap:8px;align-items:center;}
-.answer-box.open{display:flex;}
-.ans-label{font-size:0.8rem;color:#388e3c;margin-right:2px;}
+.answer-box.open{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,auto));justify-content:start;}
+.ans-label{font-size:0.85rem;color:#388e3c;font-weight:700;margin-right:4px;}
 .answer-item{background:#fff;border:1px solid #a5d6a7;border-radius:6px;
-  padding:3px 10px;font-size:0.95rem;color:var(--ans-ink);font-weight:600;}
+  padding:5px 12px;font-size:1rem;color:var(--ans-ink);font-weight:600;
+  display:flex;align-items:center;}
 
 .panel{background:var(--panel);border:1px solid var(--line);
-  border-radius:12px;padding:20px 20px;box-shadow:var(--shadow);font-size:1rem;}
+  border-radius:12px;padding:20px 20px;box-shadow:var(--shadow);font-size:1.1rem;}
 .panel h3.q-h{font-size:1.05rem;color:var(--accent);margin:0 0 14px;
   padding-bottom:8px;border-bottom:2px solid var(--accent-light);}
 .panel p{margin:0 0 10px}
@@ -140,7 +141,8 @@ function render(){
   const q = document.getElementById('search').value.trim();
   const d = ALL[String(curQ)][curY];
   const content = document.getElementById('content');
-  content.innerHTML = renderAnswerBox() + '<div class="panel">'+d.html+'</div>';
+  const processedHtml = d.html.replace(/([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯])/g, '<br>$1');
+  content.innerHTML = renderAnswerBox() + '<div class="panel">'+processedHtml+'</div>';
   if(q){
     const panel = content.querySelector('.panel');
     highlight(panel, q);
