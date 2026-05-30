@@ -28,8 +28,8 @@ h1{margin:0;font-size:1rem;color:var(--accent)}
   cursor:pointer;white-space:nowrap;}
 .q-btn:hover{background:var(--accent-light);color:var(--accent)}
 .q-btn.active{background:#fff;border-color:var(--line);color:var(--accent);font-weight:700;}
-.year-nav{display:flex;gap:4px;overflow-x:auto;padding:12px 16px 0;
-  scrollbar-width:none;border-bottom:1px solid var(--line);}
+.year-nav{display:flex;gap:4px;overflow-x:auto;padding:12px 0 0;
+  scrollbar-width:none;}
 .year-nav::-webkit-scrollbar{display:none}
 .y-btn{flex:0 0 auto;padding:6px 12px;border-radius:8px 8px 0 0;
   border:1px solid transparent;border-bottom:none;
@@ -37,12 +37,9 @@ h1{margin:0;font-size:1rem;color:var(--accent)}
   cursor:pointer;white-space:nowrap;}
 .y-btn:hover{background:var(--accent-light);color:var(--accent)}
 .y-btn.active{background:#fff;border-color:var(--line);color:var(--accent);font-weight:700;}
-.search-bar{display:flex;align-items:center;gap:8px;
-  padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);}
-.search-bar input{flex:1;border:1px solid var(--line);border-radius:8px;
-  padding:6px 10px;font-size:0.9rem;font-family:inherit;outline:none;}
-.search-bar .count{color:var(--muted);font-size:0.8rem;white-space:nowrap;}
 main{max-width:1400px;margin:0 auto;padding:20px 24px 60px;}
+
+.answer-sticky{position:sticky;z-index:15;background:var(--bg);padding:4px 0;}
 
 /* 答えボックス */
 .answer-toggle{width:100%;padding:10px 16px;margin-bottom:12px;
@@ -75,12 +72,8 @@ mark{background:var(--hl);padding:0 1px;border-radius:2px;}
 <header>
   <h1>電気通信主任技術者試験</h1>
   <div class="q-nav" id="qNav"></div>
+  <div class="year-nav" id="yearNav"></div>
 </header>
-<div class="year-nav" id="yearNav"></div>
-<div class="search-bar">
-  <input id="search" type="search" placeholder="本文を検索（例：WDM、PON、流合雑音）">
-  <span class="count" id="count"></span>
-</div>
 <main><div id="content"></div></main>
 
 <script>
@@ -126,8 +119,10 @@ function renderAnswerBox(){
   const keys = Object.keys(ans);
   let items = keys.map(k => `<span class="answer-item"><span class="ans-label">(${k})</span>${ans[k]}</span>`).join('');
   return `
-    <button class="answer-toggle" onclick="toggleAnswer(this)">▶ 正答を表示</button>
-    <div class="answer-box">${items}</div>
+    <div class="answer-sticky">
+      <button class="answer-toggle" onclick="toggleAnswer(this)">▶ 正答を表示</button>
+      <div class="answer-box">${items}</div>
+    </div>
   `;
 }
 
@@ -138,39 +133,14 @@ function toggleAnswer(btn){
 }
 
 function render(){
-  const q = document.getElementById('search').value.trim();
   const d = ALL[String(curQ)][curY];
   const content = document.getElementById('content');
   const processedHtml = d.html.replace(/([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯])/g, '<br>$1');
   content.innerHTML = renderAnswerBox() + '<div class="panel">'+processedHtml+'</div>';
-  if(q){
-    const panel = content.querySelector('.panel');
-    highlight(panel, q);
-    const n = panel.querySelectorAll('mark').length;
-    document.getElementById('count').textContent = n ? n+'件ヒット' : 'ヒットなし';
-  } else {
-    document.getElementById('count').textContent='';
-  }
+  const headerH = document.querySelector('header').offsetHeight;
+  const ansSticky = content.querySelector('.answer-sticky');
+  if(ansSticky) ansSticky.style.top = headerH + 'px';
 }
-
-function highlight(root,q){
-  const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
-  function walk(node){
-    if(node.nodeType===3){
-      const t=node.nodeValue;
-      if(re.test(t)){
-        const s=document.createElement('span');
-        s.innerHTML=t.replace(re,m=>'<mark>'+m+'</mark>');
-        node.parentNode.replaceChild(s,node);
-      }
-    } else if(node.nodeType===1&&node.tagName!=='MARK'){
-      Array.from(node.childNodes).forEach(walk);
-    }
-  }
-  walk(root);
-}
-
-document.getElementById('search').addEventListener('input',render);
 render();
 </script>
 </body>
