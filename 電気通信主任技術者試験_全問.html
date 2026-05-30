@@ -135,7 +135,9 @@ function toggleAnswer(btn){
 function render(){
   const d = ALL[String(curQ)][curY];
   const content = document.getElementById('content');
-  const processedHtml = d.html.replace(/([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯])/g, '<br>$1');
+  const processedHtml = d.html
+    .replace(/([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯])/g, '<br>$1')
+    .replace(/\n([Ａ-Ｚ]) /g, '<br>$1 ');
   content.innerHTML = renderAnswerBox() + '<div class="panel">'+processedHtml+'</div>';
   const headerH = document.querySelector('header').offsetHeight;
   const ansSticky = content.querySelector('.answer-sticky');
