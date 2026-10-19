@@ -17,32 +17,39 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
   font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;
   line-height:1.75;font-size:1rem;}
 header{background:linear-gradient(180deg,#fff,#fbfcfe);
-  border-bottom:1px solid var(--line);padding:14px 16px 0;
+  border-bottom:1px solid var(--line);padding:10px 16px 8px;
   position:sticky;top:0;z-index:20;}
-h1{margin:0;font-size:1rem;color:var(--accent)}
-.q-nav{display:flex;gap:4px;overflow-x:auto;padding:10px 0 0;scrollbar-width:none;}
-.q-nav::-webkit-scrollbar{display:none}
-.q-btn{flex:0 0 auto;padding:6px 12px;border-radius:8px 8px 0 0;
-  border:1px solid transparent;border-bottom:none;
+/* 固定領域を低く保つため、見出しと問タブは同じ行に並べる */
+.top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px;}
+h1{margin:0;font-size:0.95rem;color:var(--accent);white-space:nowrap;}
+.q-nav{display:flex;flex-wrap:wrap;gap:4px;}
+.q-btn{flex:0 0 auto;padding:5px 12px;border-radius:8px;
+  border:1px solid transparent;
   background:transparent;font-size:0.85rem;color:var(--muted);
   cursor:pointer;white-space:nowrap;}
 .q-btn:hover{background:var(--accent-light);color:var(--accent)}
 .q-btn.active{background:#fff;border-color:var(--line);color:var(--accent);font-weight:700;}
-.year-nav{display:flex;gap:4px;overflow-x:auto;padding:12px 16px 0;
-  scrollbar-width:none;border-bottom:1px solid var(--line);}
-.year-nav::-webkit-scrollbar{display:none}
-.y-btn{flex:0 0 auto;padding:6px 12px;border-radius:8px 8px 0 0;
+/* 年度タブは折り返して全件を常時表示（横スクロールさせない） */
+.year-nav{display:flex;flex-wrap:wrap;gap:4px;padding:8px 0 0;}
+.y-btn{flex:0 0 auto;padding:6px 10px;border-radius:8px 8px 0 0;
   border:1px solid transparent;border-bottom:none;
   background:transparent;font-size:0.85rem;color:var(--muted);
   cursor:pointer;white-space:nowrap;}
 .y-btn:hover{background:var(--accent-light);color:var(--accent)}
 .y-btn.active{background:#fff;border-color:var(--line);color:var(--accent);font-weight:700;}
-.search-bar{display:flex;align-items:center;gap:8px;
-  padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);}
+.search-bar{display:flex;align-items:center;gap:8px;padding:8px 0 0;}
 .search-bar input{flex:1;border:1px solid var(--line);border-radius:8px;
   padding:6px 10px;font-size:0.9rem;font-family:inherit;outline:none;}
 .search-bar .count{color:var(--muted);font-size:0.8rem;white-space:nowrap;}
 main{max-width:1400px;margin:0 auto;padding:20px 24px 60px;}
+/* 短縮タブを補う年度見出し */
+.ctx{margin:0 0 8px;font-size:0.9rem;font-weight:600;color:var(--accent);}
+/* 年度見出しと正答ボックスはヘッダ直下に固定する（--hdr はヘッダ高さ） */
+.answer-sticky{position:sticky;top:var(--hdr,0px);z-index:15;
+  background:var(--bg);padding:10px 0 6px;}
+/* 固定領域が画面を占めすぎないよう余白を詰める */
+.answer-sticky .answer-toggle{padding:8px 14px;margin-bottom:8px;}
+.answer-sticky .answer-box{padding:10px 14px;margin-bottom:0;}
 
 /* 答えボックス */
 .answer-toggle{width:100%;padding:10px 16px;margin-bottom:12px;
@@ -75,15 +82,18 @@ mark{background:var(--hl);padding:0 1px;border-radius:2px;}
 </style>
 </head>
 <body>
-<header>
-  <h1>電気通信主任技術者試験　法規</h1>
-  <div class="q-nav" id="qNav"></div>
+<!-- 見出し・問タブ・年度タブ・検索バーをまとめて画面上部に固定する -->
+<header id="hdr">
+  <div class="top">
+    <h1>電気通信主任技術者試験　法規</h1>
+    <div class="q-nav" id="qNav"></div>
+  </div>
+  <div class="year-nav" id="yearNav"></div>
+  <div class="search-bar">
+    <input id="search" type="search" placeholder="本文を検索（例：重要通信、有線電気通信設備令、平衡度）">
+    <span class="count" id="count"></span>
+  </div>
 </header>
-<div class="year-nav" id="yearNav"></div>
-<div class="search-bar">
-  <input id="search" type="search" placeholder="本文を検索（例：重要通信、有線電気通信設備令、平衡度）">
-  <span class="count" id="count"></span>
-</div>
 <main><div id="content"></div></main>
 
 <script>
@@ -101,11 +111,13 @@ for(let q=1;q<=5;q++){
   qNav.appendChild(b);
 }
 
+// 年度タブは短縮表記（例：R7-2）。正式名称はツールチップと本文上の見出しに出す
 const yearNav = document.getElementById('yearNav');
 YEARS.forEach((y,i)=>{
   const b = document.createElement('button');
   b.className = 'y-btn' + (i===0?' active':'');
-  b.textContent = y;
+  b.textContent = ALL['1'][i].tag;
+  b.title = y;
   b.onclick = ()=>selectY(i);
   yearNav.appendChild(b);
 });
@@ -144,7 +156,9 @@ function render(){
   const q = document.getElementById('search').value.trim();
   const d = ALL[String(curQ)][curY];
   const content = document.getElementById('content');
-  content.innerHTML = renderAnswerBox() + '<div class="panel">'+d.html+'</div>';
+  content.innerHTML = '<div class="answer-sticky"><p class="ctx">'+d.title+'</p>'
+                    + renderAnswerBox() + '</div>'
+                    + '<div class="panel">'+d.html+'</div>';
   if(q){
     const panel = content.querySelector('.panel');
     highlight(panel, q);
@@ -172,8 +186,18 @@ function highlight(root,q){
   walk(root);
 }
 
+// ヘッダは折り返しで高さが変わるため、実測値を --hdr に反映する
+function syncHeader(){
+  const h = document.getElementById('hdr').offsetHeight;
+  document.documentElement.style.setProperty('--hdr', h+'px');
+}
+addEventListener('resize', syncHeader);
+addEventListener('orientationchange', syncHeader);
+if(window.ResizeObserver) new ResizeObserver(syncHeader).observe(document.getElementById('hdr'));
+
 document.getElementById('search').addEventListener('input',render);
 render();
+syncHeader();
 </script>
 </body>
 </html>
