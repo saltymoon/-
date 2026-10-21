@@ -115,10 +115,12 @@ mark{background:var(--hl);padding:0 1px;border-radius:2px;}
   <div class="sync-panel" id="syncPanel">
     <p>GitHubの非公開Gistに評価を保存して端末間で同期します。
        <b>classic PAT（gist スコープのみ）</b>を貼り付けて「接続」を押してください。
-       2台目は同じトークンを入れるだけで同じGistにつながります。</p>
+       2台目は同じトークンを入れるだけで同じGistにつながります。
+       iOSのホーム画面アプリはSafariとデータが別扱いになるため、アプリ側でも一度接続が必要です。</p>
     <div class="sync-row">
       <input id="ghToken" type="password" autocomplete="off" placeholder="ghp_… （gist スコープのみ）">
       <button onclick="connectGist()">接続</button>
+      <button onclick="syncNow()">今すぐ同期</button>
       <button onclick="disconnectGist()">解除</button>
     </div>
     <p class="sync-msg" id="syncMsg"></p>
@@ -331,8 +333,29 @@ function disconnectGist(){
   showStat();
 }
 
-// 別端末で付けた評価を、戻ってきたときに取り込む
-addEventListener('visibilitychange', ()=>{ if(!document.hidden) pull(); });
+// 手動同期（iOSのホーム画面アプリなど、復帰検知が効かない場合の保険）
+async function syncNow(){
+  if(!linked()){ syncMsg('先にトークンを貼って「接続」してください。'); return; }
+  syncMsg('同期中…');
+  await pull(true);
+  await push();
+  syncMsg('同期しました。');
+}
+
+// 別端末で付けた評価を、戻ってきたときに取り込む。
+// iOSのホーム画面アプリは復帰の通知が visibilitychange だけでは不確実なため
+// pageshow と focus も拾い、短時間の重複発火だけ抑える。
+let lastPull = 0;
+function maybePull(){
+  if(!linked()) return;
+  const now = Date.now();
+  if(now - lastPull < 3000) return;
+  lastPull = now;
+  pull();
+}
+addEventListener('visibilitychange', ()=>{ if(!document.hidden) maybePull(); });
+addEventListener('pageshow', maybePull);
+addEventListener('focus', maybePull);
 
 // 各小問の見出しに評価セレクトを差し込む（検索ハイライトの後に実行すること）
 function mountSubRates(){
