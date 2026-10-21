@@ -37,10 +37,7 @@ h1{margin:0;font-size:0.95rem;color:var(--accent);white-space:nowrap;}
   cursor:pointer;white-space:nowrap;}
 .y-btn:hover{background:var(--accent-light);color:var(--accent)}
 .y-btn.active{background:#fff;border-color:var(--line);color:var(--accent);font-weight:700;}
-.search-bar{display:flex;align-items:center;gap:8px;padding:8px 0 0;}
-.search-bar input{flex:1;border:1px solid var(--line);border-radius:8px;
-  padding:6px 10px;font-size:0.9rem;font-family:inherit;outline:none;}
-.search-bar .count{color:var(--muted);font-size:0.8rem;white-space:nowrap;}
+.spacer{flex:1 1 auto;}
 /* 同期ボタンと状態表示 */
 .sync-btn{flex:0 0 auto;padding:5px 12px;border:1px solid var(--line);border-radius:8px;
   background:#fff;font-family:inherit;font-size:0.8rem;color:var(--muted);cursor:pointer;}
@@ -57,13 +54,7 @@ h1{margin:0;font-size:0.95rem;color:var(--accent);white-space:nowrap;}
   background:#fff;font-family:inherit;font-size:0.85rem;color:var(--ink);cursor:pointer;}
 .sync-row button:hover{background:var(--accent-light);color:var(--accent);}
 .sync-msg{margin:8px 0 0 !important;color:var(--accent) !important;}
-main{max-width:1400px;margin:0 auto;padding:20px 24px 60px;}
-/* 短縮タブを補う年度見出しと、その右に置く自己評価欄 */
-.ctx-row{display:flex;align-items:center;justify-content:space-between;
-  gap:10px;flex-wrap:wrap;margin:0 0 8px;}
-.ctx{margin:0;font-size:0.9rem;font-weight:600;color:var(--accent);}
-.rate-sum{font-size:0.8rem;color:var(--muted);white-space:nowrap;}
-.rate-sum.done{color:var(--ans-ink);font-weight:700;}
+main{max-width:1400px;margin:0 auto;padding:12px 24px 60px;}
 /* 小問見出しの右肩に置く自己評価セレクト */
 .sub-rate{float:right;margin:0 0 4px 12px;}
 .sub-rate select{font-family:inherit;font-size:0.8rem;padding:2px 8px;
@@ -74,9 +65,9 @@ main{max-width:1400px;margin:0 auto;padding:20px 24px 60px;}
   color:var(--ans-ink);font-weight:700;}
 /* 年度見出しと正答ボックスはヘッダ直下に固定する（--hdr はヘッダ高さ） */
 .answer-sticky{position:sticky;top:var(--hdr,0px);z-index:15;
-  background:var(--bg);padding:10px 0 6px;}
+  background:var(--bg);padding:6px 0 6px;}
 /* 固定領域が画面を占めすぎないよう余白を詰める */
-.answer-sticky .answer-toggle{padding:8px 14px;margin-bottom:8px;}
+.answer-sticky .answer-toggle{padding:6px 14px;margin-bottom:0;}
 .answer-sticky .answer-box{padding:10px 14px;margin-bottom:0;}
 
 /* 答えボックス */
@@ -115,14 +106,11 @@ mark{background:var(--hl);padding:0 1px;border-radius:2px;}
   <div class="top">
     <h1>電気通信主任技術者試験　法規</h1>
     <div class="q-nav" id="qNav"></div>
-  </div>
-  <div class="year-nav" id="yearNav"></div>
-  <div class="search-bar">
-    <input id="search" type="search" placeholder="本文を検索（例：重要通信、有線電気通信設備令、平衡度）">
-    <span class="count" id="count"></span>
+    <span class="spacer"></span>
     <button class="sync-btn" onclick="toggleSync()">同期</button>
     <span class="sync-stat" id="syncStat"></span>
   </div>
+  <div class="year-nav" id="yearNav"></div>
   <!-- トークンはこの端末のブラウザにのみ保存され、ページ本体には含まれない -->
   <div class="sync-panel" id="syncPanel">
     <p>GitHubの非公開Gistに評価を保存して端末間で同期します。
@@ -362,24 +350,12 @@ function mountSubRates(){
     sel.onchange = ()=>{
       saveRate(key, sel.value);
       sel.className = sel.value ? 'done' : '';
-      updateRateSum();
     };
     const span = document.createElement('span');
     span.className = 'sub-rate';
     span.appendChild(sel);
     p.insertBefore(span, p.firstChild);
   });
-}
-
-// 固定ヘッダに「評価済み / 小問数」を出す
-function updateRateSum(){
-  const subs = [...document.querySelectorAll('.panel p.sub-h[data-sub]')];
-  const done = subs.filter(p=>rateOf(subKey(p.dataset.sub))).length;
-  const el = document.getElementById('rateSum');
-  if(el){
-    el.textContent = '評価 ' + done + '/' + subs.length;
-    el.classList.toggle('done', done > 0 && done === subs.length);
-  }
 }
 
 function renderAnswerBox(){
@@ -400,42 +376,11 @@ function toggleAnswer(btn){
 }
 
 function render(){
-  const q = document.getElementById('search').value.trim();
   const d = ALL[String(curQ)][curY];
-  const content = document.getElementById('content');
-  content.innerHTML = '<div class="answer-sticky">'
-                    + '<div class="ctx-row"><p class="ctx">'+d.title+'</p>'
-                    + '<span class="rate-sum" id="rateSum"></span></div>'
-                    + renderAnswerBox() + '</div>'
-                    + '<div class="panel">'+d.html+'</div>';
-  if(q){
-    const panel = content.querySelector('.panel');
-    highlight(panel, q);
-    const n = panel.querySelectorAll('mark').length;
-    document.getElementById('count').textContent = n ? n+'件ヒット' : 'ヒットなし';
-  } else {
-    document.getElementById('count').textContent='';
-  }
-  // ハイライト処理がセレクト内の文字に触れないよう、最後に差し込む
+  document.getElementById('content').innerHTML =
+      '<div class="answer-sticky">' + renderAnswerBox() + '</div>'
+    + '<div class="panel">' + d.html + '</div>';
   mountSubRates();
-  updateRateSum();
-}
-
-function highlight(root,q){
-  const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
-  function walk(node){
-    if(node.nodeType===3){
-      const t=node.nodeValue;
-      if(re.test(t)){
-        const s=document.createElement('span');
-        s.innerHTML=t.replace(re,m=>'<mark>'+m+'</mark>');
-        node.parentNode.replaceChild(s,node);
-      }
-    } else if(node.nodeType===1&&node.tagName!=='MARK'){
-      Array.from(node.childNodes).forEach(walk);
-    }
-  }
-  walk(root);
 }
 
 // ヘッダは折り返しで高さが変わるため、実測値を --hdr に反映する
@@ -447,7 +392,6 @@ addEventListener('resize', syncHeader);
 addEventListener('orientationchange', syncHeader);
 if(window.ResizeObserver) new ResizeObserver(syncHeader).observe(document.getElementById('hdr'));
 
-document.getElementById('search').addEventListener('input',render);
 render();
 syncHeader();
 showStat();
