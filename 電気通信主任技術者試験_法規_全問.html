@@ -14,6 +14,7 @@
   --hl:#fff3a3;--shadow:0 2px 8px rgba(20,40,70,0.06);
   --ans-bg:#e8f5e9;--ans-ink:#1b5e20;
   --ok-line:#a5d6a7;--ok-ink:#2e7d32;--ok-soft:#f1f8e9;--ok-label:#388e3c;
+  --fs:1;              /* 本文の拡大率（±ボタンで変更） */
   color-scheme:light;
   font-size:19px;
 }
@@ -87,7 +88,7 @@ h1{margin:0;font-size:0.95rem;color:var(--accent);white-space:nowrap;}
 main{max-width:1400px;margin:0 auto;padding:12px 24px 60px;}
 /* 小問見出しの右肩に置く自己評価セレクト */
 .sub-rate{float:right;margin:0 0 4px 12px;}
-.sub-rate select{font-family:inherit;font-size:0.8rem;padding:2px 8px;
+.sub-rate select{font-family:inherit;font-size:0.8em;padding:2px 8px;
   border:1px solid var(--line);border-radius:6px;
   background:var(--surface);color:var(--ink);font-weight:400;cursor:pointer;}
 /* 評価済みは緑でひと目で分かるようにする */
@@ -115,13 +116,14 @@ main{max-width:1400px;margin:0 auto;padding:12px 24px 60px;}
   padding:3px 10px;font-size:0.95rem;color:var(--ans-ink);font-weight:600;}
 
 .panel{background:var(--panel);border:1px solid var(--line);
-  border-radius:12px;padding:20px 20px;box-shadow:var(--shadow);font-size:1rem;}
-.panel h3.q-h{font-size:1.05rem;color:var(--accent);margin:0 0 14px;
+  border-radius:12px;padding:20px 20px;box-shadow:var(--shadow);
+  font-size:calc(1rem * var(--fs));}
+.panel h3.q-h{font-size:1.05em;color:var(--accent);margin:0 0 14px;
   padding-bottom:8px;border-bottom:2px solid var(--accent-light);}
 .panel p{margin:0 0 10px}
 .panel p.sub-h{font-weight:600;color:var(--sub-ink);margin-top:18px;margin-bottom:8px;
   background:var(--accent-light);padding:6px 10px;border-radius:6px;}
-.panel p.cg-h{color:var(--ink-soft);font-size:0.9rem;margin-top:10px;
+.panel p.cg-h{color:var(--ink-soft);font-size:0.9em;margin-top:10px;
   background:var(--surface-2);padding:5px 10px;border-radius:6px;display:inline-block;}
 /* 選択肢・記述文・項目のぶら下げインデント */
 .panel p.opt{margin:0 0 7px;padding-left:1.7em;text-indent:-1.7em;}
@@ -132,7 +134,9 @@ mark{background:var(--hl);padding:0 1px;border-radius:2px;}
 <script>
 /* 描画前にテーマを当て、ライト画面が一瞬出るのを防ぐ */
 try{ var t = localStorage.getItem('houki-theme');
-     if(t) document.documentElement.setAttribute('data-theme', t); }catch(e){}
+     if(t) document.documentElement.setAttribute('data-theme', t);
+     var f = localStorage.getItem('houki-fs');
+     if(f) document.documentElement.style.setProperty('--fs', f); }catch(e){}
 </script>
 </head>
 <body>
@@ -142,6 +146,8 @@ try{ var t = localStorage.getItem('houki-theme');
     <h1>電気通信主任技術者試験　法規</h1>
     <div class="q-nav" id="qNav"></div>
     <span class="spacer"></span>
+    <button class="sync-btn" onclick="bumpFs(-1)" title="文字を小さく">A-</button>
+    <button class="sync-btn" onclick="bumpFs(1)" title="文字を大きく">A+</button>
     <button class="sync-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
     <button class="sync-btn" onclick="toggleSync()">同期</button>
     <span class="sync-stat" id="syncStat"></span>
@@ -323,6 +329,19 @@ async function push(){
     stamp();
   }catch(e){ setStat('同期エラー'); }
   pushing = false;
+}
+
+// ---- 本文の文字サイズ ----
+const FS_KEY = 'houki-fs', FS_MIN = 0.8, FS_MAX = 2.0, FS_STEP = 0.1;
+function getFs(){
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fs'));
+  return isNaN(v) ? 1 : v;
+}
+function bumpFs(dir){
+  const v = Math.min(FS_MAX, Math.max(FS_MIN,
+            Math.round((getFs() + dir * FS_STEP) * 100) / 100));
+  document.documentElement.style.setProperty('--fs', v);
+  try{ localStorage.setItem(FS_KEY, v); }catch(e){}
 }
 
 // ---- 配色（未選択なら端末の設定に従う） ----
