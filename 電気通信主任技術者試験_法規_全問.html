@@ -5,18 +5,47 @@
 <title>電気通信主任技術者試験 法規 — 問１〜問５</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=3">
 <style>
+/* 配色はすべてトークン化し、ダークは下の2ブロックで上書きする */
 :root{
-  --bg:#f6f8fb;--panel:#fff;--ink:#1a2236;--muted:#6b7790;
-  --line:#e3e8ef;--accent:#8a4a1a;--accent-light:#fbefe4;
+  --bg:#f6f8fb;--panel:#fff;--surface:#fff;--surface-2:#f3f5f9;
+  --hdr-a:#fff;--hdr-b:#fbfcfe;
+  --ink:#1a2236;--ink-soft:#444455;--muted:#6b7790;--line:#e3e8ef;
+  --accent:#8a4a1a;--accent-light:#fbefe4;--sub-ink:#5a3318;
   --hl:#fff3a3;--shadow:0 2px 8px rgba(20,40,70,0.06);
   --ans-bg:#e8f5e9;--ans-ink:#1b5e20;
+  --ok-line:#a5d6a7;--ok-ink:#2e7d32;--ok-soft:#f1f8e9;--ok-label:#388e3c;
+  color-scheme:light;
   font-size:19px;
+}
+/* 端末がダーク設定のとき（明示的にライトを選んでいなければ） */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1216;--panel:#171b21;--surface:#1c2128;--surface-2:#20252d;
+    --hdr-a:#171b21;--hdr-b:#13171c;
+    --ink:#dfe3ea;--ink-soft:#b9c0cc;--muted:#97a0b0;--line:#2b313b;
+    --accent:#e0a86a;--accent-light:#2a2118;--sub-ink:#f0d8bd;
+    --hl:#7a6a1f;--shadow:0 2px 8px rgba(0,0,0,0.45);
+    --ans-bg:#17291b;--ans-ink:#9fd9a6;
+    --ok-line:#3f6b45;--ok-ink:#8fd99a;--ok-soft:#1d2e20;--ok-label:#79bd83;
+    color-scheme:dark;
+  }
+}
+/* 画面上のボタンでダークを選んだとき */
+:root[data-theme="dark"]{
+  --bg:#0f1216;--panel:#171b21;--surface:#1c2128;--surface-2:#20252d;
+  --hdr-a:#171b21;--hdr-b:#13171c;
+  --ink:#dfe3ea;--ink-soft:#b9c0cc;--muted:#97a0b0;--line:#2b313b;
+  --accent:#e0a86a;--accent-light:#2a2118;--sub-ink:#f0d8bd;
+  --hl:#7a6a1f;--shadow:0 2px 8px rgba(0,0,0,0.45);
+  --ans-bg:#17291b;--ans-ink:#9fd9a6;
+  --ok-line:#3f6b45;--ok-ink:#8fd99a;--ok-soft:#1d2e20;--ok-label:#79bd83;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
   font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;
   line-height:1.75;font-size:1rem;}
-header{background:linear-gradient(180deg,#fff,#fbfcfe);
+header{background:linear-gradient(180deg,var(--hdr-a),var(--hdr-b));
   border-bottom:1px solid var(--line);padding:10px 16px 8px;
   position:sticky;top:0;z-index:20;}
 /* 固定領域を低く保つため、見出しと問タブは同じ行に並べる */
@@ -28,7 +57,7 @@ h1{margin:0;font-size:0.95rem;color:var(--accent);white-space:nowrap;}
   background:transparent;font-size:0.85rem;color:var(--muted);
   cursor:pointer;white-space:nowrap;}
 .q-btn:hover{background:var(--accent-light);color:var(--accent)}
-.q-btn.active{background:#fff;border-color:var(--line);color:var(--accent);font-weight:700;}
+.q-btn.active{background:var(--surface);border-color:var(--line);color:var(--accent);font-weight:700;}
 /* 年度タブは折り返して全件を常時表示（横スクロールさせない） */
 .year-nav{display:flex;flex-wrap:wrap;gap:4px;padding:8px 0 0;}
 .y-btn{flex:0 0 auto;padding:6px 10px;border-radius:8px 8px 0 0;
@@ -36,22 +65,23 @@ h1{margin:0;font-size:0.95rem;color:var(--accent);white-space:nowrap;}
   background:transparent;font-size:0.85rem;color:var(--muted);
   cursor:pointer;white-space:nowrap;}
 .y-btn:hover{background:var(--accent-light);color:var(--accent)}
-.y-btn.active{background:#fff;border-color:var(--line);color:var(--accent);font-weight:700;}
+.y-btn.active{background:var(--surface);border-color:var(--line);color:var(--accent);font-weight:700;}
 .spacer{flex:1 1 auto;}
 /* 同期ボタンと状態表示 */
 .sync-btn{flex:0 0 auto;padding:5px 12px;border:1px solid var(--line);border-radius:8px;
-  background:#fff;font-family:inherit;font-size:0.8rem;color:var(--muted);cursor:pointer;}
+  background:var(--surface);font-family:inherit;font-size:0.8rem;color:var(--muted);cursor:pointer;}
 .sync-btn:hover{background:var(--accent-light);color:var(--accent);}
 .sync-stat{font-size:0.75rem;color:var(--muted);white-space:nowrap;min-width:5.5em;}
 .sync-panel{display:none;margin-top:8px;padding:10px 12px;
-  border:1px solid var(--line);border-radius:10px;background:#fff;}
+  border:1px solid var(--line);border-radius:10px;background:var(--surface);}
 .sync-panel.open{display:block;}
 .sync-panel p{margin:0 0 8px;font-size:0.78rem;line-height:1.6;color:var(--muted);}
 .sync-row{display:flex;flex-wrap:wrap;gap:6px;}
 .sync-row input{flex:1 1 240px;min-width:0;border:1px solid var(--line);border-radius:8px;
-  padding:6px 10px;font-size:0.85rem;font-family:inherit;outline:none;}
+  padding:6px 10px;font-size:0.85rem;font-family:inherit;outline:none;
+  background:var(--surface);color:var(--ink);}
 .sync-row button{flex:0 0 auto;padding:6px 14px;border:1px solid var(--line);border-radius:8px;
-  background:#fff;font-family:inherit;font-size:0.85rem;color:var(--ink);cursor:pointer;}
+  background:var(--surface);font-family:inherit;font-size:0.85rem;color:var(--ink);cursor:pointer;}
 .sync-row button:hover{background:var(--accent-light);color:var(--accent);}
 .sync-msg{margin:8px 0 0 !important;color:var(--accent) !important;}
 main{max-width:1400px;margin:0 auto;padding:12px 24px 60px;}
@@ -59,9 +89,9 @@ main{max-width:1400px;margin:0 auto;padding:12px 24px 60px;}
 .sub-rate{float:right;margin:0 0 4px 12px;}
 .sub-rate select{font-family:inherit;font-size:0.8rem;padding:2px 8px;
   border:1px solid var(--line);border-radius:6px;
-  background:#fff;color:var(--ink);font-weight:400;cursor:pointer;}
+  background:var(--surface);color:var(--ink);font-weight:400;cursor:pointer;}
 /* 評価済みは緑でひと目で分かるようにする */
-.sub-rate select.done{border-color:#a5d6a7;background:var(--ans-bg);
+.sub-rate select.done{border-color:var(--ok-line);background:var(--ans-bg);
   color:var(--ans-ink);font-weight:700;}
 /* 年度見出しと正答ボックスはヘッダ直下に固定する（--hdr はヘッダ高さ） */
 .answer-sticky{position:sticky;top:var(--hdr,0px);z-index:15;
@@ -72,16 +102,16 @@ main{max-width:1400px;margin:0 auto;padding:12px 24px 60px;}
 
 /* 答えボックス */
 .answer-toggle{width:100%;padding:10px 16px;margin-bottom:12px;
-  background:#fff;border:1px solid #a5d6a7;border-radius:10px;
-  color:#2e7d32;font-size:0.95rem;font-weight:600;
+  background:var(--surface);border:1px solid var(--ok-line);border-radius:10px;
+  color:var(--ok-ink);font-size:0.95rem;font-weight:600;
   cursor:pointer;text-align:left;}
-.answer-toggle:hover{background:#f1f8e9;}
-.answer-box{background:var(--ans-bg);border:1px solid #a5d6a7;
+.answer-toggle:hover{background:var(--ok-soft);}
+.answer-box{background:var(--ans-bg);border:1px solid var(--ok-line);
   border-radius:10px;padding:12px 16px;margin-bottom:16px;
   display:none;flex-wrap:wrap;gap:8px;align-items:center;}
 .answer-box.open{display:flex;}
-.ans-label{font-size:0.8rem;color:#388e3c;margin-right:2px;}
-.answer-item{background:#fff;border:1px solid #a5d6a7;border-radius:6px;
+.ans-label{font-size:0.8rem;color:var(--ok-label);margin-right:2px;}
+.answer-item{background:var(--surface);border:1px solid var(--ok-line);border-radius:6px;
   padding:3px 10px;font-size:0.95rem;color:var(--ans-ink);font-weight:600;}
 
 .panel{background:var(--panel);border:1px solid var(--line);
@@ -89,16 +119,21 @@ main{max-width:1400px;margin:0 auto;padding:12px 24px 60px;}
 .panel h3.q-h{font-size:1.05rem;color:var(--accent);margin:0 0 14px;
   padding-bottom:8px;border-bottom:2px solid var(--accent-light);}
 .panel p{margin:0 0 10px}
-.panel p.sub-h{font-weight:600;color:#5a3318;margin-top:18px;margin-bottom:8px;
+.panel p.sub-h{font-weight:600;color:var(--sub-ink);margin-top:18px;margin-bottom:8px;
   background:var(--accent-light);padding:6px 10px;border-radius:6px;}
-.panel p.cg-h{color:#445;font-size:0.9rem;margin-top:10px;
-  background:#f3f5f9;padding:5px 10px;border-radius:6px;display:inline-block;}
+.panel p.cg-h{color:var(--ink-soft);font-size:0.9rem;margin-top:10px;
+  background:var(--surface-2);padding:5px 10px;border-radius:6px;display:inline-block;}
 /* 選択肢・記述文・項目のぶら下げインデント */
 .panel p.opt{margin:0 0 7px;padding-left:1.7em;text-indent:-1.7em;}
 .panel p.stmt{margin:0 0 7px;padding-left:1.5em;text-indent:-1.5em;}
 .panel p.item{margin:0 0 7px;padding-left:2em;text-indent:-2em;}
 mark{background:var(--hl);padding:0 1px;border-radius:2px;}
 </style>
+<script>
+/* 描画前にテーマを当て、ライト画面が一瞬出るのを防ぐ */
+try{ var t = localStorage.getItem('houki-theme');
+     if(t) document.documentElement.setAttribute('data-theme', t); }catch(e){}
+</script>
 </head>
 <body>
 <!-- 見出し・問タブ・年度タブ・検索バーをまとめて画面上部に固定する -->
@@ -107,6 +142,7 @@ mark{background:var(--hl);padding:0 1px;border-radius:2px;}
     <h1>電気通信主任技術者試験　法規</h1>
     <div class="q-nav" id="qNav"></div>
     <span class="spacer"></span>
+    <button class="sync-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
     <button class="sync-btn" onclick="toggleSync()">同期</button>
     <span class="sync-stat" id="syncStat"></span>
   </div>
@@ -289,6 +325,32 @@ async function push(){
   pushing = false;
 }
 
+// ---- 配色（未選択なら端末の設定に従う） ----
+const THEME_KEY = 'houki-theme';
+const prefersDark = matchMedia('(prefers-color-scheme: dark)');
+
+function isDark(){
+  const t = document.documentElement.getAttribute('data-theme');
+  return t ? t === 'dark' : prefersDark.matches;
+}
+function paintThemeBtn(){
+  const b = document.getElementById('themeBtn');
+  if(!b) return;
+  const dark = isDark();
+  b.textContent = dark ? '☀' : '🌙';
+  b.title = dark ? 'ライトに切替' : 'ダークに切替';
+}
+function toggleTheme(){
+  const next = isDark() ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  paintThemeBtn();
+}
+// 自分で選んでいない間は端末の設定変更に追従する
+prefersDark.addEventListener('change', ()=>{
+  if(!document.documentElement.getAttribute('data-theme')) paintThemeBtn();
+});
+
 function toggleSync(){
   document.getElementById('syncPanel').classList.toggle('open');
   syncHeader();
@@ -416,6 +478,7 @@ addEventListener('orientationchange', syncHeader);
 if(window.ResizeObserver) new ResizeObserver(syncHeader).observe(document.getElementById('hdr'));
 
 render();
+paintThemeBtn();
 syncHeader();
 showStat();
 if(linked()) pull(true);
